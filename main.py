@@ -15,6 +15,46 @@ class GameSprite(sprite.Sprite):
     def draw(self):
         window.blit(self.pimage, (self.rect.x, self.rect.y))
 
+class Player(GameSprite):
+    def update(self):
+        keys = key.get_pressed()
+        if keys[K_UP] and self.rect.y > 0:
+            self.rect.y -= self.speed
+
+    def down(self):
+        keys = key.get_pressed()
+        if keys[K_DOWN] and self.rect.y < win_height - self.rect.height:
+            self.rect.y += self.speed
+
+    def left(self):
+        keys = key.get_pressed()
+        if keys[K_LEFT] and self.rect.x > 0:
+            self.rect.x -= self.speed
+
+    def right(self):
+        keys = key.get_pressed()
+        if keys[K_RIGHT] and self.rect.x < win_width - self.rect.width:
+            self.rect.x += self.speed
+
+
+class Enemy(GameSprite):
+    direction = 'left'
+
+    def update(self):
+        if self.rect.x > win_width - self.rect.width:
+            self.direction = 'left'
+        if self.rect.x < win_width * 0.3:
+            self.direction = 'right'
+
+        if self.direction == 'left':
+            self.rect.x -= self.speed
+
+        if self.direction == 'right':
+            self.rect.x += self.speed
+
+
+
+
 win_height = 500
 win_width = 700
 
@@ -26,8 +66,8 @@ display.set_caption("Лабіринт")
 
 
 
-player = GameSprite('hero.png', 10, win_height-80, 4)
-enemy = GameSprite('cyborg.png', win_width-80, 80, 2)
+player = Player('hero.png', 10, win_height-80, 4)
+enemy = Enemy('cyborg.png', win_width-80, 80, 2)
 final = GameSprite('treasure.png', win_width-80, win_height-80, 0)
 
 
@@ -41,6 +81,12 @@ mixer.music.play()
 
 while game:
     window.blit(background, (0, 0))
+
+
+    player.update()
+
+    enemy.update()
+
     player.draw()
     enemy.draw()
     final.draw()
